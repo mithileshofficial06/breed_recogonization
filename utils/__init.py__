@@ -1,0 +1,131 @@
+"""
+Utilities package for Breed Recognition System
+==============================================
+
+This package contains utility functions and helper classes for image processing,
+database operations, and language support for the breed recognition system.
+
+Modules:
+    image_preprocessing: Image processing utilities for model input preparation
+    breed_database: Database operations for breed information management
+    language_support: Multi-language support for the application
+    
+Usage:
+    from utils.image_preprocessing import ImagePreprocessor
+    from utils.breed_database import BreedDatabase
+    from utils.language_support import LanguageSupport
+    
+    # Process images
+    processor = ImagePreprocessor()
+    processed_image = processor.preprocess_image('path/to/image.jpg')
+    
+    # Get breed information
+    db = BreedDatabase()
+    breed_info = db.get_breed_info('Gir')
+    
+    # Handle translations
+    lang_support = LanguageSupport()
+    translated_text = lang_support.get_translation('breed_name', 'hi')
+"""
+
+from .image_preprocessing import ImagePreprocessor
+from .breed_database import BreedDatabase
+from .language_support import LanguageSupport
+
+__version__ = "1.0.0"
+__author__ = "Breed Recognition Team"
+
+# Export main classes
+__all__ = [
+    'ImagePreprocessor',
+    'BreedDatabase', 
+    'LanguageSupport'
+]
+
+# Utility constants
+SUPPORTED_IMAGE_FORMATS = ['.jpg', '.jpeg', '.png', '.bmp', '.tiff']
+SUPPORTED_LANGUAGES = ['en', 'hi', 'ta']
+DEFAULT_LANGUAGE = 'en'
+
+# Image processing constants
+DEFAULT_IMAGE_SIZE = (224, 224)
+MAX_IMAGE_SIZE_MB = 10
+ALLOWED_CHANNELS = [1, 3]  # Grayscale or RGB
+
+def get_supported_formats():
+    """
+    Get list of supported image formats
+    
+    Returns:
+        list: List of supported file extensions
+    """
+    return SUPPORTED_IMAGE_FORMATS.copy()
+
+def get_supported_languages():
+    """
+    Get list of supported languages
+    
+    Returns:
+        list: List of supported language codes
+    """
+    return SUPPORTED_LANGUAGES.copy()
+
+def validate_image_format(filename):
+    """
+    Validate if the image format is supported
+    
+    Args:
+        filename (str): Name of the image file
+        
+    Returns:
+        bool: True if format is supported, False otherwise
+    """
+    import os
+    _, ext = os.path.splitext(filename.lower())
+    return ext in SUPPORTED_IMAGE_FORMATS
+
+def validate_language_code(lang_code):
+    """
+    Validate if the language code is supported
+    
+    Args:
+        lang_code (str): Language code to validate
+        
+    Returns:
+        bool: True if language is supported, False otherwise
+    """
+    return lang_code in SUPPORTED_LANGUAGES
+
+def get_file_size_mb(filepath):
+    """
+    Get file size in megabytes
+    
+    Args:
+        filepath (str): Path to the file
+        
+    Returns:
+        float: File size in MB
+    """
+    import os
+    if os.path.exists(filepath):
+        size_bytes = os.path.getsize(filepath)
+        return size_bytes / (1024 * 1024)
+    return 0.0
+
+def create_directory(directory_path):
+    """
+    Create directory if it doesn't exist
+    
+    Args:
+        directory_path (str): Path to the directory
+        
+    Returns:
+        bool: True if directory exists or was created successfully
+    """
+    import os
+    try:
+        os.makedirs(directory_path, exist_ok=True)
+        return True
+    except Exception as e:
+        print(f"Error creating directory {directory_path}: {e}")
+        return False

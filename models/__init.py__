@@ -1,0 +1,90 @@
+"""
+Models package for Breed Recognition System
+============================================
+
+This package contains the core machine learning models and utilities for 
+cattle breed recognition. It includes model training, prediction, and 
+evaluation capabilities.
+
+Modules:
+    model_trainer: Contains the ModelTrainer class for training CNN models
+    model_predictor: Contains the ModelPredictor class for making predictions
+    
+Usage:
+    from models.model_trainer import ModelTrainer
+    from models.model_predictor import ModelPredictor
+    
+    # Train a new model
+    trainer = ModelTrainer()
+    trainer.train_model()
+    
+    # Make predictions
+    predictor = ModelPredictor()
+    result = predictor.predict('path/to/image.jpg')
+"""
+
+from .model_trainer import ModelTrainer
+from .model_predictor import ModelPredictor
+
+__version__ = "1.0.0"
+__author__ = "Breed Recognition Team"
+
+# Export main classes
+__all__ = [
+    'ModelTrainer',
+    'ModelPredictor'
+]
+
+# Model configuration constants
+MODEL_INPUT_SIZE = (224, 224, 3)
+SUPPORTED_BREEDS = [
+    'Alamabadi', 'Bargur', 'Gir', 'Kangayam', 
+    'Pulikulam', 'Umblachery', 'Buffalo', 'Murrah', 'Toda'
+]
+MODEL_VERSION = "v1.0"
+MODEL_FILENAME = "breed_recognition_model.h5"
+
+# Model performance thresholds
+CONFIDENCE_THRESHOLD = 0.7
+MIN_PREDICTION_CONFIDENCE = 0.5
+
+def get_model_info():
+    """
+    Get information about the current model configuration
+    
+    Returns:
+        dict: Model configuration information
+    """
+    return {
+        "version": MODEL_VERSION,
+        "input_size": MODEL_INPUT_SIZE,
+        "supported_breeds": SUPPORTED_BREEDS,
+        "confidence_threshold": CONFIDENCE_THRESHOLD,
+        "model_file": MODEL_FILENAME
+    }
+
+def validate_model_file(model_path):
+    """
+    Validate that a model file exists and is accessible
+    
+    Args:
+        model_path (str): Path to the model file
+        
+    Returns:
+        bool: True if model file is valid, False otherwise
+    """
+    import os
+    from pathlib import Path
+    
+    if not os.path.exists(model_path):
+        return False
+    
+    # Check if file has correct extension
+    if not model_path.endswith('.h5'):
+        return False
+    
+    # Check if file is not empty
+    if os.path.getsize(model_path) == 0:
+        return False
+    
+    return True

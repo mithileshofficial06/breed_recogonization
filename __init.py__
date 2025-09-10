@@ -1,0 +1,213 @@
+"""
+Breed Recognition System
+========================
+
+A Flask-based web application for recognizing cattle breeds using deep learning.
+This system can identify various Indian cattle breeds from uploaded images.
+
+Supported Breeds:
+    - Alamabadi
+    - Bargur  
+    - Gir
+    - Kangayam
+    - Pulikulam
+    - Umblachery
+    - Buffalo
+    - Murrah
+    - Toda
+
+Features:
+    - Image upload and preprocessing
+    - Deep learning-based breed classification
+    - Multi-language support (English, Hindi, Tamil)
+    - Responsive web interface
+    - Confidence scoring for predictions
+    - Breed information database
+
+Project Structure:
+    breed_recognition/
+    ├── app.py                    # Main Flask application
+    ├── config.py                 # Configuration settings
+    ├── requirements.txt          # Python dependencies
+    ├── models/                   # ML models and training
+    ├── utils/                    # Utility functions
+    ├── static/                   # CSS, JS, and images
+    ├── templates/                # HTML templates
+    ├── translations/             # Multi-language support
+    ├── data/                     # Training and test data
+    └── uploads/                  # Temporary uploaded images
+
+Usage:
+    python app.py
+    
+    Then visit http://localhost:5000 in your browser.
+
+Requirements:
+    - Python 3.8+
+    - TensorFlow 2.x
+    - Flask
+    - OpenCV
+    - PIL/Pillow
+    - NumPy
+    - See requirements.txt for complete list
+
+Author: Breed Recognition Team
+Version: 1.0.0
+License: MIT
+"""
+
+# Version information
+__version__ = "1.0.0"
+__author__ = "Breed Recognition Team"
+__email__ = "contact@breedrecognition.com"
+__license__ = "MIT"
+
+# Application metadata
+APP_NAME = "Breed Recognition System"
+APP_DESCRIPTION = "AI-powered cattle breed identification system"
+APP_VERSION = __version__
+
+# System requirements
+MIN_PYTHON_VERSION = "3.8"
+REQUIRED_TENSORFLOW_VERSION = ">=2.0.0"
+
+# Supported file formats
+SUPPORTED_IMAGE_FORMATS = ['.jpg', '.jpeg', '.png', '.bmp', '.tiff']
+
+# Supported languages
+SUPPORTED_LANGUAGES = {
+    'en': 'English',
+    'hi': 'हिन्दी',
+    'ta': 'தமிழ்'
+}
+
+# Breed categories
+CATTLE_BREEDS = [
+    'Alamabadi', 'Bargur', 'Gir', 'Kangayam', 
+    'Pulikulam', 'Umblachery'
+]
+
+BUFFALO_BREEDS = [
+    'Buffalo', 'Murrah', 'Toda'
+]
+
+ALL_BREEDS = CATTLE_BREEDS + BUFFALO_BREEDS
+
+# Configuration constants
+DEFAULT_CONFIG = {
+    'MAX_CONTENT_LENGTH': 16 * 1024 * 1024,  # 16MB max file size
+    'UPLOAD_FOLDER': 'uploads',
+    'MODEL_PATH': 'models/breed_recognition_model.h5',
+    'CONFIDENCE_THRESHOLD': 0.7,
+    'DEBUG': False,
+    'SECRET_KEY': 'your-secret-key-here'  # Change in production
+}
+
+def get_app_info():
+    """
+    Get application information
+    
+    Returns:
+        dict: Application metadata
+    """
+    return {
+        'name': APP_NAME,
+        'version': __version__,
+        'description': APP_DESCRIPTION,
+        'author': __author__,
+        'license': __license__,
+        'supported_breeds': ALL_BREEDS,
+        'supported_languages': list(SUPPORTED_LANGUAGES.keys()),
+        'supported_formats': SUPPORTED_IMAGE_FORMATS
+    }
+
+def check_system_requirements():
+    """
+    Check if system meets minimum requirements
+    
+    Returns:
+        dict: Requirements check results
+    """
+    import sys
+    import pkg_resources
+    
+    results = {
+        'python_version': sys.version,
+        'python_compatible': sys.version_info >= tuple(map(int, MIN_PYTHON_VERSION.split('.'))),
+        'tensorflow_available': False,
+        'flask_available': False,
+        'opencv_available': False,
+        'pil_available': False
+    }
+    
+    # Check for required packages
+    required_packages = [
+        'tensorflow',
+        'flask', 
+        'opencv-python',
+        'Pillow',
+        'numpy'
+    ]
+    
+    for package in required_packages:
+        try:
+            pkg_resources.get_distribution(package)
+            results[f'{package.replace("-", "_")}_available'] = True
+        except pkg_resources.DistributionNotFound:
+            results[f'{package.replace("-", "_")}_available'] = False
+    
+    return results
+
+def validate_installation():
+    """
+    Validate that the application is properly installed
+    
+    Returns:
+        tuple: (is_valid, error_messages)
+    """
+    import os
+    from pathlib import Path
+    
+    errors = []
+    
+    # Check system requirements
+    req_check = check_system_requirements()
+    if not req_check['python_compatible']:
+        errors.append(f"Python {MIN_PYTHON_VERSION}+ required")
+    
+    if not req_check['tensorflow_available']:
+        errors.append("TensorFlow not installed")
+    
+    if not req_check['flask_available']:
+        errors.append("Flask not installed")
+    
+    # Check directory structure
+    required_dirs = ['models', 'utils', 'static', 'templates', 'translations']
+    
+    for directory in required_dirs:
+        if not os.path.exists(directory):
+            errors.append(f"Missing directory: {directory}")
+    
+    # Check critical files
+    critical_files = [
+        'app.py',
+        'config.py', 
+        'requirements.txt',
+        'static/css/style.css',
+        'templates/base.html',
+        'templates/index.html'
+    ]
+    
+    for file_path in critical_files:
+        if not os.path.exists(file_path):
+            errors.append(f"Missing file: {file_path}")
+    
+    return len(errors) == 0, errors
+
+# Export main components for easier importing
+try:
+    from .models import ModelTrainer, ModelPredictor
+    from .utils import ImagePreprocessor, BreedDatabase, LanguageSupport
+except ImportError:
+    # Handle case where modules aren't available yet
+    pass

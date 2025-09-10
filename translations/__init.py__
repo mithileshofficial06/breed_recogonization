@@ -1,0 +1,174 @@
+"""
+Translations package for Breed Recognition System
+================================================
+
+This package contains translation files for multi-language support.
+Currently supports English, Hindi, and Tamil languages.
+
+Files:
+    en.json: English translations (default)
+    hi.json: Hindi translations
+    ta.json: Tamil translations
+    
+The translation files contain key-value pairs for all user-facing text
+in the application, including breed names, UI elements, and messages.
+
+Structure of translation files:
+{
+    "app_title": "Breed Recognition System",
+    "upload_image": "Upload Image",
+    "breeds": {
+        "Alamabadi": "Alamabadi",
+        "Bargur": "Bargur",
+        ...
+    },
+    "messages": {
+        "upload_success": "Image uploaded successfully",
+        "prediction_error": "Error in prediction",
+        ...
+    }
+}
+
+Usage:
+    The LanguageSupport class in utils.language_support handles loading
+    and accessing these translation files.
+"""
+
+import os
+import json
+from pathlib import Path
+
+__version__ = "1.0.0"
+__author__ = "Breed Recognition Team"
+
+# Available languages
+AVAILABLE_LANGUAGES = {
+    'en': 'English',
+    'hi': 'हिन्दी',  # Hindi
+    'ta': 'தமிழ்'   # Tamil
+}
+
+DEFAULT_LANGUAGE = 'en'
+
+def get_available_languages():
+    """
+    Get dictionary of available languages
+    
+    Returns:
+        dict: Language code to language name mapping
+    """
+    return AVAILABLE_LANGUAGES.copy()
+
+def get_translation_file_path(lang_code):
+    """
+    Get path to translation file for given language
+    
+    Args:
+        lang_code (str): Language code ('en', 'hi', 'ta')
+        
+    Returns:
+        str: Path to translation file
+    """
+    current_dir = Path(__file__).parent
+    return str(current_dir / f"{lang_code}.json")
+
+def load_translation_file(lang_code):
+    """
+    Load translation file for given language
+    
+    Args:
+        lang_code (str): Language code
+        
+    Returns:
+        dict: Translation dictionary or None if file doesn't exist
+    """
+    file_path = get_translation_file_path(lang_code)
+    
+    try:
+        if os.path.exists(file_path):
+            with open(file_path, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        else:
+            print(f"Translation file not found: {file_path}")
+            return None
+    except Exception as e:
+        print(f"Error loading translation file {file_path}: {e}")
+        return None
+
+def validate_translation_file(lang_code):
+    """
+    Validate that translation file exists and is properly formatted
+    
+    Args:
+        lang_code (str): Language code to validate
+        
+    Returns:
+        bool: True if file is valid, False otherwise
+    """
+    translations = load_translation_file(lang_code)
+    
+    if translations is None:
+        return False
+    
+    # Check for required keys
+    required_keys = ['app_title', 'breeds', 'messages', 'ui']
+    
+    for key in required_keys:
+        if key not in translations:
+            print(f"Missing required key '{key}' in {lang_code}.json")
+            return False
+    
+    return True
+
+def create_empty_translation_file(lang_code):
+    """
+    Create an empty translation file template
+    
+    Args:
+        lang_code (str): Language code for new file
+        
+    Returns:
+        bool: True if file created successfully
+    """
+    template = {
+        "app_title": "Breed Recognition System",
+        "ui": {
+            "upload_image": "Upload Image",
+            "analyze": "Analyze",
+            "result": "Result",
+            "confidence": "Confidence",
+            "back": "Back",
+            "home": "Home"
+        },
+        "breeds": {
+            "Alamabadi": "Alamabadi",
+            "Bargur": "Bargur", 
+            "Gir": "Gir",
+            "Kangayam": "Kangayam",
+            "Pulikulam": "Pulikulam",
+            "Umblachery": "Umblachery",
+            "Buffalo": "Buffalo",
+            "Murrah": "Murrah",
+            "Toda": "Toda"
+        },
+        "messages": {
+            "upload_success": "Image uploaded successfully",
+            "upload_error": "Error uploading image",
+            "prediction_success": "Prediction completed",
+            "prediction_error": "Error in prediction",
+            "invalid_format": "Invalid image format",
+            "file_too_large": "File size too large",
+            "no_file_selected": "No file selected"
+        }
+    }
+    
+    file_path = get_translation_file_path(lang_code)
+    
+    try:
+        with open(file_path, 'w', encoding='utf-8') as f:
+            json.dump(template, f, indent=2, ensure_ascii=False)
+        print(f"Created translation template: {file_path}")
+        return True
+    except Exception as e:
+        print(f"Error creating translation file: {e}")
+        return False
