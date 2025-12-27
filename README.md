@@ -50,5 +50,3 @@ pip install -r requirements.txt
 ## Run the Application
 python app.py
 
-## 🗂️ Project Structure
-
